@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "start": "livereload | http-server -c-1 | webpack"
+  },
+  "devDependencies": {
+    "@types/node": "^16.3.3",
+    "@types/webpack": "^5.28.0",
+    "css-loader": "^6.1.0",
+    "http-server": "^0.12.3",
+    "livereload": "^0.9.3",
+    "style-loader": "^3.1.0",
+    "ts-loader": "^9.2.3",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5",
+    "webpack": "^5.45.1",
+    "webpack-cli": "^4.7.2"
+  }
+}
