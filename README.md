@@ -14,3 +14,7 @@
 ### Ссылки на записи стримов
 
 - [Первый стрим](https://youtu.be/CV9MyAlk1D4)
+
+### Онлайн демо
+
+Разместил онлайн версию [тут](https://vicimpa.github.io/tetris-stream)
