@@ -26,7 +26,7 @@ export class GameMap extends SizedArray {
           if(typeof value != 'number')
             continue
 
-          v = value
+          v = v || value
         }
 
         return [x, y, v] as [number, number, number]
@@ -55,9 +55,42 @@ export class GameMap extends SizedArray {
   @Bind()
   fix(figure: Figure) {
     this.remove(figure)
-    /**
-     * #todo Сделать позже!
-     */
+
+    for(let [x, y, v] of figure.entries()) {
+      if(!v) continue
+      x += figure.x
+      y += figure.y
+
+      this.set(p(x, y), v)
+    }
+  }
+
+  @Bind()
+  checkClear(count = 0) {
+    for(let y = 0; y < this.height; y++) {
+      let clear = true
+
+      for(let x = 0; x < this.width; x++) {
+        if(!this.get(p(x, y))) {
+          clear = false
+          break
+        }
+      }
+
+      if(clear) {
+        const f = y
+
+        for(let [x, y, v] of this.entries()) {
+          if(y >= f) continue
+          this.set(p(x, y + 1), v)
+        }
+
+        this.checkClear(count + 1)
+        break
+      }
+    }
+
+    return count
   }
 
   @Bind()

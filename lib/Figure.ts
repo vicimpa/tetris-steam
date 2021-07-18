@@ -1,14 +1,21 @@
+import { GameMap } from "./GameMap"
 import { p } from "./Point"
 import { SizedArray } from "./SizedArray"
+import { randomSort } from "./Utils"
 
 export class Figure extends SizedArray {
   x = 0
   y = 0
 
+  previewState = {
+    x: this.x,
+    y: this.y,
+    map: this.clonedMap
+  }
+
   get randomColor() {
-    const [skip,...colors] = Figure.colors
-    const [colorValue] = colors.sort(() => 
-      Math.random() > 0.5 ? 1 : -1)
+    const [skip, ...colors] = Figure.colors
+    const [colorValue] = randomSort(colors)
     return Figure.colors.indexOf(colorValue)
   }
 
@@ -30,17 +37,61 @@ export class Figure extends SizedArray {
     return figure
   }
 
-  rotate() {
-    const source = this.clone()
+  save() {
+    this.previewState = {
+      x: this.x,
+      y: this.y,
+      map: this.clonedMap
+    }
+  }
 
-    const {height, width} = this
+  back() {
+    this.x = this.previewState.x
+    this.y = this.previewState.y
+    this.map = this.previewState.map
+  }
+
+  move(x: number, y: number) {
+    this.save()
+
+    this.x += x
+    this.y += y
+
+    return this
+  }
+
+  haveCollizion(map: GameMap, haveNull = false) {
+    for(let [x, y, v] of this.entries()) {
+      if(!v) continue
+
+      x += this.x
+      y += this.y
+
+      if(x < 0 || x >= map.width)
+        return true
+
+      if((haveNull && y < 0) || y >= map.height)
+        return true
+
+      if(map.get(p(x, y)))
+        return true
+    }
+
+    return false
+  }
+
+  rotate() {
+    this.save()
+    
+    const source = this.clone()
+    const { height, width } = this
 
     this.width = height
     this.height = width
 
-    for(let [x, y, v] of source.entries())
-      this.set(p(height-1-y, x), v)
-   
+    for (let [x, y, v] of source.entries())
+      this.set(p(height - 1 - y, x), v)
+
     return this
   }
 
@@ -69,9 +120,13 @@ export class Figure extends SizedArray {
   }
 
   static colors = [
-    'transparent', 
-    'red', 
-    'green', 
-    'blue'
+    'transparent',
+    'red',
+    'green',
+    'blue',
+    '#00FFFF',
+    '#FF00FE',
+    '#FFFF14',
+    '#0000FE'
   ]
 }
