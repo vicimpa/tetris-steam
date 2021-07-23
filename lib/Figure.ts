@@ -7,6 +7,8 @@ export class Figure extends SizedArray {
   x = 0
   y = 0
 
+  delta = 0
+
   previewState = {
     x: this.x,
     y: this.y,
@@ -56,6 +58,9 @@ export class Figure extends SizedArray {
 
     this.x += x
     this.y += y
+
+    if(y)
+      this.delta = 1
 
     return this
   }

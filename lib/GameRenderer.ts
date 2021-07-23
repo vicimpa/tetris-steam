@@ -51,23 +51,60 @@ export class GameRenderer {
 
   @Bind()
   render() {
-    const { size, ctx, map } = this
+    const { size, ctx, map, time } = this
     const { width, height } = this.map
+    const newTime = performance.now()
+
+    this.deltaTime = newTime - time
+    this.time = newTime
+
+    if (this.deltaTime > 100)
+      this.deltaTime = 0
 
     ctx.clearRect(0, 0, width * size, height * size)
 
-    for(let [x, y, v] of map.entriesRender()) {
+    for (let [x, y, v] of map.entries()) {
       const color = Figure.colors[v] || 'transparent'
 
       const X = x * size
       const Y = y * size
 
       ctx.beginPath()
+
+      ctx.strokeStyle = '#dddddd'
+      ctx.fillStyle = color
+      ctx.strokeRect(X, Y, size, size)
+      ctx.fillRect(X + 1, Y + 1, size - 1, size - 1)
+
+      ctx.closePath()
+    }
+
+    for (let figure of map.figures) {
+      let { x: vX, y: vY } = figure
+
+      vX *= size
+      vY *= size
+
+      for (let [x, y, v] of figure.entries()) {
+        const color = Figure.colors[v] || 'transparent'
+        const dY = figure.delta * size
+
+        x *= size
+        y *= size
+
+        ctx.beginPath()
+
         ctx.strokeStyle = '#dddddd'
         ctx.fillStyle = color
-        ctx.strokeRect(X, Y, size, size)
-        ctx.fillRect(X +1, Y +1, size-1, size-1)
-      ctx.closePath()
+        ctx.fillRect(x+vX + 1, y+vY-dY + 1, size - 1, size - 1)
+
+        ctx.closePath()
+      }
+
+      if (figure.delta > 0)
+        figure.delta -= 0.15
+      else
+        figure.delta = 0
     }
   }
 }

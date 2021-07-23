@@ -3,8 +3,11 @@ import { Figure } from "./Figure";
 import { getRandomFigure } from "./FigureStore";
 import { GameMap } from "./GameMap";
 import { GameRenderer } from "./GameRenderer";
+import { Keyboard } from "./Keyboard";
 
 export class GameEngine {
+  keyboard = new Keyboard()
+  
   figure: Figure = getRandomFigure()
   map = new GameMap()
   next = new GameMap(8, 8)
@@ -12,59 +15,25 @@ export class GameEngine {
   renderer = new GameRenderer(this.map)
   rendererNext = new GameRenderer(this.next)
 
-
   work = false
   speed = 600
   isDown = false
   tickCount = 0
   previewTick = performance.now()
+  previewMove = performance.now()
 
   constructor(query: string) {
+
     this.renderer.append(query)
     this.renderer.render()
     this.newFigure()
-
-    addEventListener('keydown', this.keyDown)
-    addEventListener('keyup', this.keyUp)
-  }
-
-  @Bind()
-  keyUp(e: KeyboardEvent) {    
-    e.preventDefault()
-
-    if(e.key == 'ArrowDown')
-      this.isDown = false
-  }
-
-  @Bind()
-  keyDown(e: KeyboardEvent) {
-    e.preventDefault()
-
-    switch(e.key) {
-      case 'ArrowUp': {
-        this.rotate()
-      } break
-
-      case 'ArrowLeft': {
-        this.move(-1)
-      }; break
-
-      case 'ArrowRight': {
-        this.move(1)
-      } break
-
-      case 'ArrowDown': {
-        if(!e.repeat)
-          this.isDown = true
-      } break
-    }
   }
 
   @Bind()
   rotate() {
     this.figure.rotate()
 
-    if(this.figure.haveCollizion(this.map))
+    if (this.figure.haveCollizion(this.map))
       this.figure.back()
 
     this.renderer.render()
@@ -74,7 +43,7 @@ export class GameEngine {
   move(dir: -1 | 1) {
     this.figure.move(dir, 0)
 
-    if(this.figure.haveCollizion(this.map))
+    if (this.figure.haveCollizion(this.map))
       this.figure.back()
 
     this.renderer.render()
@@ -82,7 +51,7 @@ export class GameEngine {
 
   @Bind()
   newFigure() {
-    if(this.figure)
+    if (this.figure)
       this.map.remove(this.figure)
 
     this.figure = getRandomFigure()
@@ -90,7 +59,7 @@ export class GameEngine {
     this.map.add(this.figure)
     const y = -this.figure.height
     const x = Math.round(
-      this.map.width / 2 - 
+      this.map.width / 2 -
       this.figure.width / 2
     )
 
@@ -100,7 +69,7 @@ export class GameEngine {
 
   @Bind()
   start() {
-    if(this.work)
+    if (this.work)
       return
 
     this.work = true
@@ -110,7 +79,7 @@ export class GameEngine {
 
   @Bind()
   stop() {
-    if(!this.work)
+    if (!this.work)
       return
 
     this.work = false
@@ -118,40 +87,65 @@ export class GameEngine {
 
   @Bind()
   tick() {
-    if(!this.work)
+    if (!this.work)
       return
 
     requestAnimationFrame(this.tick)
 
-    const {figure} = this
+    const { figure, keyboard } = this
 
-    let time = performance.now()
-    let { previewTick, speed, isDown } = this
+    const time = performance.now()
+    const { previewTick, previewMove } = this
 
-    if(isDown)
+    let speed = this.speed
+    let moveSpeed = 100
+
+    if (keyboard.down('ArrowDown'))
       speed = 50
 
-    if(time < previewTick + speed)
-      return
+    if(keyboard.single('ArrowUp'))
+      this.rotate()
 
-    this.tickCount += 1
-    this.previewTick = time
+    if(
+      keyboard.single('ArrowLeft') || 
+      keyboard.single('ArrowRight')
+    ) this.previewMove = time 
 
-    figure.move(0, 1)
+    if(keyboard.single('ArrowDown'))
+      this.previewTick = time - speed
 
-    if(figure.haveCollizion(this.map)) {
-      figure.back()
-
-      if(this.figure.haveCollizion(this.map, true)) {
-        this.stop()
-        alert('Game Over!')
-        location.reload()
-        return
+    if(time >= previewMove + moveSpeed) {
+      if(keyboard.down('ArrowLeft')) {
+        this.move(-1)
+        this.previewMove = time
+      } else  if(keyboard.down('ArrowRight')) {
+        this.move(1)
+        this.previewMove = time
+      } else {
+        this.previewMove = time - moveSpeed
       }
-      
-      this.map.fix(this.figure)
-      this.map.checkClear()
-      this.newFigure()
+    }
+
+    if (time >= previewTick + speed) {
+      this.tickCount += 1
+      this.previewTick = time
+
+      figure.move(0, 1)
+
+      if (figure.haveCollizion(this.map)) {
+        figure.back()
+
+        if (this.figure.haveCollizion(this.map, true)) {
+          this.stop()
+          alert('Game Over!')
+          location.reload()
+          return
+        }
+
+        this.map.fix(this.figure)
+        this.map.checkClear()
+        this.newFigure()
+      }
     }
 
     this.renderer.render()
