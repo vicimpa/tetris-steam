@@ -9,7 +9,7 @@ export const I = (
       '    ',
       '    ',
     )
-)
+);
 
 export const O = (
   Figure
@@ -17,7 +17,7 @@ export const O = (
       '##',
       '##'
     )
-)
+);
 
 export const T = (
   Figure
@@ -26,7 +26,7 @@ export const T = (
       '###',
       ' # '
     )
-)
+);
 
 export const J = (
   Figure
@@ -35,7 +35,7 @@ export const J = (
       ' # ',
       '## '
     )
-)
+);
 
 export const L = (
   Figure
@@ -44,7 +44,7 @@ export const L = (
       ' # ',
       ' ##'
     )
-)
+);
 
 export const S = (
   Figure
@@ -53,7 +53,7 @@ export const S = (
       '## ',
       '   '
     )
-)
+);
 
 export const Z = (
   Figure
@@ -62,20 +62,20 @@ export const Z = (
       ' ##',
       '   '
     )
-)
+);
 
-export const figuresArray = [I, O, T, J, L, Z]
+export const figuresArray = [I, O, T, J, L, Z];
 
 export function getRandomFigure() {
-  let rand = (Math.random() * 4) | 0
+  let rand = (Math.random() * 4) | 0;
 
   const figure = randomSort([...figuresArray])[0]
     .clone()
-    .color()
-    
+    .color();
 
-  while(rand--)
-    figure.rotate()
 
-  return figure
+  while (rand--)
+    figure.rotate();
+
+  return figure;
 }

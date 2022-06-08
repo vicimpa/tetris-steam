@@ -1,6 +1,5 @@
-import './index.css'
-import { GameEngine } from './lib/GameEngine'
-import { Keyboard } from './lib/Keyboard'
+import "./index.css";
 
-const engine = new GameEngine('#app')
-engine.start()
+import { GameEngine } from "./lib/GameEngine";
+
+new GameEngine('#app').start();

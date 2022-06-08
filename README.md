@@ -4,11 +4,18 @@
 
 - [Node.js](https://nodejs.org/)
 
-### Чтобы запустить билд
+### Чтобы запустить
 
 ```bash
 > npm install
-> npm start
+> npm run dev
+```
+
+### Чтобы cобрать
+
+```bash
+> npm install
+> npm run build
 ```
 
 ### Ссылки на записи стримов
