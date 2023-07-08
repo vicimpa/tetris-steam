@@ -7,6 +7,9 @@
       "DOM.Iterable",
       "ESNext"
     ],
+    "types": [
+      "vite/client"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": false,
@@ -20,15 +23,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "composite": true,
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "experimentalDecorators": true
   },
   "include": [
-    "./"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "vite.config.ts"
+    "./src"
   ]
 }
