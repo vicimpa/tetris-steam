@@ -2,7 +2,12 @@ import { defineConfig } from "vite";
 import paths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  publicDir: './',
+  root: './src',
+  base: './',
+  build: {
+    outDir: '../dist'
+  },
+
   plugins: [
     paths()
   ]
