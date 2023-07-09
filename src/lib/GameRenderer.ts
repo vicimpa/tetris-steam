@@ -23,17 +23,18 @@ export class GameRenderer {
     this.elem.style.height = `${hSize}px`;
     this.elem.style.border = '2px solid #999';
     this.elem.style.imageRendering = 'pixelated';
-
-    addEventListener('resize', this.resize);
-    this.resize();
   }
 
   @Bind()
-  append(query: string) {
-    const elem = document.querySelector(query);
+  append(query: string | HTMLElement): void {
+    if (query instanceof HTMLElement) {
+      query.appendChild(this.elem);
+      return;
+    }
+
+    const elem = document.querySelector<HTMLElement>(query);
     if (!elem) throw new Error('No find element!');
-    elem.appendChild(this.elem);
-    this.resize();
+    return this.append(elem);
   }
 
   @Bind()

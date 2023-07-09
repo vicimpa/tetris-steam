@@ -6,11 +6,16 @@ import { GameRenderer } from "./GameRenderer";
 import { Keyboard } from "./Keyboard";
 
 export class GameEngine {
+  #score = 0;
+
+  appendScores = [0, 100, 300, 700, 1500];
   keyboard = new Keyboard();
 
   figure: Figure = getRandomFigure();
+  nexFigure: Figure = getRandomFigure();
+
   map = new GameMap();
-  next = new GameMap(8, 8);
+  next = new GameMap(4, 4);
 
   renderer = new GameRenderer(this.map);
   rendererNext = new GameRenderer(this.next);
@@ -18,15 +23,68 @@ export class GameEngine {
   work = false;
   speed = 600;
   isDown = false;
+  pause = false;
+  get score() { return this.#score; }
+  set score(v) { this.#score = v; this.scoreElement.innerText = `${v}`; }
   tickCount = 0;
   previewTick = performance.now();
   previewMove = performance.now();
 
-  constructor(query: string) {
+  scoreElement = document.createElement('p');
+  pauseElement = document.createElement('p');
+  pauseButton = document.createElement('button');
 
-    this.renderer.append(query);
-    this.renderer.render();
+  constructor(query: string) {
+    const app = document.querySelector<HTMLElement>(query)!;
+    const content = app.querySelector<HTMLElement>('#content')!;
+    const side = app.querySelector<HTMLElement>('#side')!;
+
+    this.scoreElement.className = "score";
+    this.pauseElement.innerText = 'Пауза';
+    this.pauseElement.className = 'pause';
+    this.pauseButton.innerText = 'Пауза (Esc)';
+    this.scoreElement.innerText = '0';
+
+    this.renderer.append(content);
     this.newFigure();
+
+    side.appendChild(this.scoreElement);
+    this.rendererNext.append(side);
+    side.appendChild(this.pauseButton);
+    content.appendChild(this.pauseElement);
+    this.resize(app);
+
+    addEventListener('keydown', ({ key }) => {
+      if (key === 'Escape')
+        this.togglePause();
+    });
+
+    addEventListener('resize', () => {
+      this.resize(app);
+    });
+
+    this.pauseButton.addEventListener('click', this.togglePause);
+
+    this.togglePause();
+  }
+
+  @Bind()
+  resize(elem: HTMLElement) {
+    const p = 20;
+    const { parentElement } = elem;
+    if (!parentElement) return;
+
+    const { offsetWidth: W, offsetHeight: H } = parentElement;
+    const { offsetWidth: w, offsetHeight: h } = elem;
+
+    const scale = Math.min((W - p * 2) / w, (H - p * 2) / h);
+    elem.style.transform = `scale(${scale})`;
+  }
+
+  @Bind()
+  togglePause() {
+    this.pause = !this.pause;
+    this.pauseElement.classList[this.pause ? 'add' : 'remove']('show');
   }
 
   @Bind()
@@ -54,7 +112,9 @@ export class GameEngine {
     if (this.figure)
       this.map.remove(this.figure);
 
-    this.figure = getRandomFigure();
+    this.figure = this.nexFigure;
+    this.nexFigure = getRandomFigure();
+    this.next.add(this.nexFigure);
 
     this.map.add(this.figure);
     const y = -this.figure.height;
@@ -65,6 +125,7 @@ export class GameEngine {
 
     this.figure.position(x, y);
     this.renderer.render();
+    this.rendererNext.render();
   }
 
   @Bind()
@@ -93,9 +154,13 @@ export class GameEngine {
     requestAnimationFrame(this.tick);
 
     const { figure, keyboard } = this;
-
     const time = performance.now();
+
     const { previewTick, previewMove } = this;
+    if (this.pause) {
+      this.previewTick = time;
+      this.previewMove = time;
+    }
 
     let speed = this.speed;
     let moveSpeed = 100;
@@ -143,7 +208,8 @@ export class GameEngine {
         }
 
         this.map.fix(this.figure);
-        this.map.checkClear();
+        const count = this.map.checkClear();
+        this.score += this.appendScores[count] ?? 10000;
         this.newFigure();
       }
     }

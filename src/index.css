@@ -1,9 +1,15 @@
 html,
-body,
-#app {
+body {
   width: 100vw;
   height: 100vh;
   background: #333;
+  color: #fff;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 * {
@@ -14,9 +20,53 @@ body,
 #app {
   display: flex;
   justify-content: center;
-  align-items: center;
+  gap: 10px
 }
 
+#side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#content {
+  position: relative;
+}
 canvas {
   background: #aaa;
+}
+
+.pause {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  background-color: rgba(0,0,0,0.3);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.pause.show {
+  opacity: 1;
+}
+.score {
+  font-weight: 600;
+  gap: 10px;
+  display: flex;
+  font-size: 12px;
+}
+.score::before {
+  content: 'Счёт: ';
+  font-weight: 100;
+}
+
+button {
+  cursor: pointer;
 }

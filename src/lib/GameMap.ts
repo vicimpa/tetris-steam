@@ -66,7 +66,7 @@ export class GameMap extends SizedArray {
   }
 
   @Bind()
-  checkClear(count = 0) {
+  checkClear(s = { count: 0 }) {
     for (let y = 0; y < this.height; y++) {
       let clear = true;
 
@@ -85,12 +85,13 @@ export class GameMap extends SizedArray {
           this.set(p(x, y + 1), v);
         }
 
-        this.checkClear(count + 1);
+        s.count++;
+        this.checkClear(s);
         break;
       }
     }
 
-    return count;
+    return s.count;
   }
 
   @Bind()
