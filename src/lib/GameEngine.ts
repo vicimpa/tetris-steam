@@ -168,6 +168,7 @@ export class GameEngine {
     if (this.pause) {
       this.previewTick = time;
       this.previewMove = time;
+      return;
     }
 
     let speed = this.speed;
