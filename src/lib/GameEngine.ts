@@ -33,17 +33,23 @@ export class GameEngine {
   scoreElement = document.createElement('p');
   pauseElement = document.createElement('p');
   pauseButton = document.createElement('button');
+  githubLink = document.createElement('a');
+  gapElement = document.createElement('div');
 
   constructor(query: string) {
     const app = document.querySelector<HTMLElement>(query)!;
     const content = app.querySelector<HTMLElement>('#content')!;
     const side = app.querySelector<HTMLElement>('#side')!;
 
+    this.gapElement.className = 'gap';
     this.scoreElement.className = "score";
-    this.pauseElement.innerText = 'Пауза';
+    this.pauseElement.innerText = 'Пауза (Esc)';
     this.pauseElement.className = 'pause';
     this.pauseButton.innerText = 'Пауза (Esc)';
     this.scoreElement.innerText = '0';
+    this.githubLink.innerText = 'GitHub';
+
+    this.githubLink.href = 'https://github.com/vicimpa/tetris';
 
     this.renderer.append(content);
     this.newFigure();
@@ -53,6 +59,8 @@ export class GameEngine {
     side.appendChild(this.pauseButton);
     content.appendChild(this.pauseElement);
     this.resize(app);
+    side.appendChild(this.gapElement);
+    side.appendChild(this.githubLink);
 
     addEventListener('keydown', ({ key }) => {
       if (key === 'Escape')
