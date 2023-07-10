@@ -43,7 +43,7 @@ export class GameEngine {
   work = false;
   speed = 600;
   isDown = false;
-  pause = false;
+  pause = true;
 
   tickCount = 0;
 
