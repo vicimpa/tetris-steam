@@ -62,6 +62,18 @@ canvas {
   backdrop-filter: blur(2px);
   opacity: 0;
   transition: 0.3s;
+  flex-direction: column;
+}
+
+.pause::after {
+  content: ' ';
+  background: url('/img/keys.svg');
+  display: block;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  padding-bottom: 50%;
 }
 
 .pause.show {

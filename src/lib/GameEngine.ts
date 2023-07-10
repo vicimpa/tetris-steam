@@ -3,11 +3,19 @@ import { Figure } from "./Figure";
 import { getRandomFigure } from "./FigureStore";
 import { GameMap } from "./GameMap";
 import { GameRenderer } from "./GameRenderer";
-import { Keyboard } from "./Keyboard";
+import { makeController } from "./makeController";
 
 export class GameEngine {
   #score = 0;
   #hiScore = +(localStorage.getItem('hiscore') ?? '0');
+
+  #ctrl = makeController({
+    'keyUp': ['ArrowUp', 'w', 'W'],
+    'keyDown': ['ArrowDown', 's', 'S'],
+    'keyLeft': ['ArrowLeft', 'a', 'A'],
+    'keyRight': ['ArrowRight', 'd', 'D'],
+    'pause': ['Escape', 'Space']
+  });
 
   get score() { return this.#score; }
   set score(v) {
@@ -22,7 +30,6 @@ export class GameEngine {
   }
 
   appendScores = [0, 100, 300, 700, 1500];
-  keyboard = new Keyboard();
 
   figure: Figure = getRandomFigure();
   nexFigure: Figure = getRandomFigure();
@@ -79,18 +86,13 @@ export class GameEngine {
     side.appendChild(this.gapElement);
     side.appendChild(this.githubLink);
 
-    addEventListener('keydown', ({ key }) => {
-      if (key === 'Escape')
-        this.togglePause();
-    });
-
     addEventListener('resize', () => {
       this.resize(app);
     });
 
-    this.pauseButton.addEventListener('click', this.togglePause);
-
-    this.togglePause();
+    this.pauseButton.addEventListener('click', () => {
+      this.pause = !this.pause;
+    });
   }
 
   @Bind()
@@ -104,12 +106,6 @@ export class GameEngine {
 
     const scale = Math.min((W - p * 2) / w, (H - p * 2) / h);
     elem.style.transform = `scale(${scale})`;
-  }
-
-  @Bind()
-  togglePause() {
-    this.pause = !this.pause;
-    this.pauseElement.classList[this.pause ? 'add' : 'remove']('show');
   }
 
   @Bind()
@@ -172,14 +168,38 @@ export class GameEngine {
   }
 
   @Bind()
+  checkPause() {
+    const show = 'show';
+    const { classList } = this.pauseElement;
+
+    if (this.pause && !classList.contains(show))
+      classList.add(show);
+    if (!this.pause && classList.contains(show))
+      classList.remove(show);
+  }
+
+  @Bind()
   tick() {
     if (!this.work)
       return;
 
+    const {
+      keyUp,
+      keyDown,
+      keyLeft,
+      keyRight,
+      pause,
+    } = this.#ctrl;
+
     requestAnimationFrame(this.tick);
 
-    const { figure, keyboard } = this;
+    const { figure } = this;
     const time = performance.now();
+
+    if (pause.isSingle()) {
+      this.pause = !this.pause;
+    }
+    this.checkPause();
 
     const { previewTick, previewMove } = this;
     if (this.pause) {
@@ -191,25 +211,24 @@ export class GameEngine {
     let speed = this.speed;
     let moveSpeed = 100;
 
-    if (keyboard.down('ArrowDown'))
+    if (keyDown.isDown())
       speed = 50;
 
-    if (keyboard.single('ArrowUp'))
+    if (keyUp.isSingle())
       this.rotate();
 
     if (
-      keyboard.single('ArrowLeft') ||
-      keyboard.single('ArrowRight')
+      keyLeft.isSingle() || keyRight.isSingle()
     ) this.previewMove = time;
 
-    if (keyboard.single('ArrowDown'))
+    if (keyDown.isSingle())
       this.previewTick = time - speed;
 
     if (time >= previewMove + moveSpeed) {
-      if (keyboard.down('ArrowLeft')) {
+      if (keyLeft.isDown()) {
         this.move(-1);
         this.previewMove = time;
-      } else if (keyboard.down('ArrowRight')) {
+      } else if (keyRight.isDown()) {
         this.move(1);
         this.previewMove = time;
       } else {
