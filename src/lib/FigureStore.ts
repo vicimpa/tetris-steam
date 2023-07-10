@@ -1,5 +1,5 @@
 import { Figure } from "./Figure";
-import { randomSort } from "./Utils";
+import { randomSort } from "./randomSort";
 
 export const I = (
   Figure

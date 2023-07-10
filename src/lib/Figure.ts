@@ -1,7 +1,7 @@
 import { GameMap } from "./GameMap";
 import { p } from "./Point";
+import { randomSort } from "./randomSort";
 import { SizedArray } from "./SizedArray";
-import { randomSort } from "./Utils";
 
 export class Figure extends SizedArray {
   x = 0;
