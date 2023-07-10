@@ -64,7 +64,7 @@ export const Z = (
     ).color(7)
 );
 
-export const figuresArray = [I, O, T, J, L, Z];
+export const figuresArray = [I, O, T, J, L, S, Z];
 
 export function getRandomFigure() {
   let rand = (Math.random() * 4) | 0;
