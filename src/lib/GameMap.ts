@@ -44,7 +44,12 @@ export class GameMap extends SizedArray {
   }
 
   @Bind()
-  remove(figure: Figure) {
+  remove(figure?: Figure) {
+    if (!figure) {
+      this.figures.splice(0);
+      return;
+    }
+
     const { figures } = this;
     const index = figures.indexOf(figure);
 

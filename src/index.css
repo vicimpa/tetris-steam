@@ -78,6 +78,14 @@ canvas {
   font-weight: 100;
 }
 
+.score:nth-child(2) {
+  margin-top: -10px;
+}
+
+.score:nth-child(2)::before {
+  content: 'Рекорд: '
+}
+
 button {
   cursor: pointer;
 }

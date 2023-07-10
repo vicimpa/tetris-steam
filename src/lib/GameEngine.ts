@@ -7,6 +7,19 @@ import { Keyboard } from "./Keyboard";
 
 export class GameEngine {
   #score = 0;
+  #hiScore = +(localStorage.getItem('hiscore') ?? '0');
+
+  get score() { return this.#score; }
+  set score(v) {
+    this.#score = v;
+    this.scoreElement.innerText = `${v}`;
+
+    if (this.#score > this.#hiScore) {
+      this.#hiScore = this.#score;
+      this.hiScoreElement.innerText = `${this.#hiScore}`;
+      localStorage.setItem('hiscore', `${this.#score}`);
+    }
+  }
 
   appendScores = [0, 100, 300, 700, 1500];
   keyboard = new Keyboard();
@@ -24,13 +37,14 @@ export class GameEngine {
   speed = 600;
   isDown = false;
   pause = false;
-  get score() { return this.#score; }
-  set score(v) { this.#score = v; this.scoreElement.innerText = `${v}`; }
+
   tickCount = 0;
+
   previewTick = performance.now();
   previewMove = performance.now();
 
   scoreElement = document.createElement('p');
+  hiScoreElement = document.createElement('p');
   pauseElement = document.createElement('p');
   pauseButton = document.createElement('button');
   githubLink = document.createElement('a');
@@ -43,10 +57,12 @@ export class GameEngine {
 
     this.gapElement.className = 'gap';
     this.scoreElement.className = "score";
+    this.hiScoreElement.className = "score";
     this.pauseElement.innerText = 'Пауза (Esc)';
     this.pauseElement.className = 'pause';
     this.pauseButton.innerText = 'Пауза (Esc)';
     this.scoreElement.innerText = '0';
+    this.hiScoreElement.innerText = `${this.#hiScore}`;
     this.githubLink.innerText = 'GitHub';
 
     this.githubLink.href = 'https://github.com/vicimpa/tetris';
@@ -55,6 +71,7 @@ export class GameEngine {
     this.newFigure();
 
     side.appendChild(this.scoreElement);
+    side.appendChild(this.hiScoreElement);
     this.rendererNext.append(side);
     side.appendChild(this.pauseButton);
     content.appendChild(this.pauseElement);
@@ -122,8 +139,8 @@ export class GameEngine {
 
     this.figure = this.nexFigure;
     this.nexFigure = getRandomFigure();
+    this.next.remove();
     this.next.add(this.nexFigure);
-
     this.map.add(this.figure);
     const y = -this.figure.height;
     const x = Math.round(
