@@ -16,7 +16,7 @@ export class Figure extends SizedArray {
   };
 
   get randomColor() {
-    const [skip, ...colors] = Figure.colors;
+    const [, ...colors] = Figure.colors;
     const [colorValue] = randomSort(colors);
     return Figure.colors.indexOf(colorValue);
   }

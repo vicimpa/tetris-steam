@@ -2,7 +2,7 @@ type TDesc = TypedPropertyDescriptor<(...args: any[]) => any>;
 
 export function Bind(obj?: any) {
   return (
-    (target: any, key: string, descriptor: TDesc) => {
+    (_: any, key: string, descriptor: TDesc) => {
       const { value } = descriptor || {};
 
       if (typeof value != 'function')
