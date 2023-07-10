@@ -86,16 +86,25 @@ canvas {
   font-size: 12px;
 }
 .score::before {
-  content: 'Счёт: ';
   font-weight: 100;
 }
 
-.score:nth-child(2) {
+
+.score:not(:nth-child(1)) {
   margin-top: -10px;
 }
 
+.score:nth-child(1)::before {
+  content: 'Счёт: ';
+}
 .score:nth-child(2)::before {
   content: 'Рекорд: '
+}
+.score:nth-child(3)::before {
+  content: 'Линии: '
+}
+.score:nth-child(4)::before {
+  content: 'Уровень: '
 }
 
 button {

@@ -126,12 +126,12 @@ export class Figure extends SizedArray {
 
   static colors = [
     'transparent',
-    'red',
-    'green',
-    'blue',
-    '#00FFFF',
-    '#FF00FE',
-    '#FFFF14',
-    '#0000FE'
+    '#00EEEE',
+    '#0008EE',
+    '#EE9500',
+    '#EEEE00',
+    '#00EE00',
+    '#9508EE',
+    '#EE0000'
   ];
 }

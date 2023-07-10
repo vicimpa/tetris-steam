@@ -1,4 +1,5 @@
 import { Bind } from "./Bind";
+import { createElement } from "./createElement";
 import { Figure } from "./Figure";
 import { getRandomFigure } from "./FigureStore";
 import { GameMap } from "./GameMap";
@@ -7,6 +8,7 @@ import { makeController } from "./makeController";
 
 export class GameEngine {
   #score = 0;
+  #lines = 0;
   #hiScore = +(localStorage.getItem('hiscore') ?? '0');
 
   #ctrl = makeController({
@@ -29,6 +31,17 @@ export class GameEngine {
     }
   }
 
+  get lines() { return this.#lines; }
+  set lines(v) {
+    this.#lines = v;
+    this.linesElement.innerText = `${this.#lines}`;
+    this.levelElement.innerText = `${this.#lines / 10 | 0}`;
+  }
+
+  get speed() {
+    return 600 - (this.#lines / 10 | 0) * 15;
+  };
+
   appendScores = [0, 100, 300, 700, 1500];
 
   figure: Figure = getRandomFigure();
@@ -41,7 +54,6 @@ export class GameEngine {
   rendererNext = new GameRenderer(this.next);
 
   work = false;
-  speed = 600;
   isDown = false;
   pause = true;
 
@@ -50,35 +62,27 @@ export class GameEngine {
   previewTick = performance.now();
   previewMove = performance.now();
 
-  scoreElement = document.createElement('p');
-  hiScoreElement = document.createElement('p');
-  pauseElement = document.createElement('p');
-  pauseButton = document.createElement('button');
-  githubLink = document.createElement('a');
-  gapElement = document.createElement('div');
+  gapElement = createElement('div', { className: 'gap' });
+  scoreElement = createElement('p', { className: 'score', innerText: `${this.score}` });
+  hiScoreElement = createElement('p', { className: 'score', innerText: `${this.#hiScore}` });
+  linesElement = createElement('p', { className: 'score', innerText: `${this.#lines}` });
+  levelElement = createElement('p', { className: 'score', innerText: `${this.#lines / 10 | 0}` });
+  pauseElement = createElement('p', { className: 'pause', innerText: 'Пауза (Esc | Space)' });
+  pauseButton = createElement('button', { innerText: 'Пауза (Esc)' });
+  githubLink = createElement('a', { href: 'https://github.com/vicimpa/tetris', innerText: 'GitHub' });
 
   constructor(query: string) {
     const app = document.querySelector<HTMLElement>(query)!;
     const content = app.querySelector<HTMLElement>('#content')!;
     const side = app.querySelector<HTMLElement>('#side')!;
 
-    this.gapElement.className = 'gap';
-    this.scoreElement.className = "score";
-    this.hiScoreElement.className = "score";
-    this.pauseElement.innerText = 'Пауза (Esc | Space)';
-    this.pauseElement.className = 'pause';
-    this.pauseButton.innerText = 'Пауза (Esc)';
-    this.scoreElement.innerText = '0';
-    this.hiScoreElement.innerText = `${this.#hiScore}`;
-    this.githubLink.innerText = 'GitHub';
-
-    this.githubLink.href = 'https://github.com/vicimpa/tetris';
-
     this.renderer.append(content);
     this.newFigure();
 
     side.appendChild(this.scoreElement);
     side.appendChild(this.hiScoreElement);
+    side.appendChild(this.linesElement);
+    side.appendChild(this.levelElement);
     this.rendererNext.append(side);
     side.appendChild(this.pauseButton);
     content.appendChild(this.pauseElement);
@@ -86,13 +90,8 @@ export class GameEngine {
     side.appendChild(this.gapElement);
     side.appendChild(this.githubLink);
 
-    addEventListener('resize', () => {
-      this.resize(app);
-    });
-
-    this.pauseButton.addEventListener('click', () => {
-      this.pause = !this.pause;
-    });
+    addEventListener('resize', this.resize.bind(this, app));
+    this.pauseButton.addEventListener('click', () => this.pause = !this.pause);
   }
 
   @Bind()
@@ -212,7 +211,7 @@ export class GameEngine {
     let moveSpeed = 100;
 
     if (keyDown.isDown())
-      speed = 50;
+      speed *= .1;
 
     if (keyUp.isSingle())
       this.rotate();
@@ -254,6 +253,7 @@ export class GameEngine {
 
         this.map.fix(this.figure);
         const count = this.map.checkClear();
+        this.lines += count;
         this.score += this.appendScores[count] ?? 10000;
         this.newFigure();
       }
