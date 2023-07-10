@@ -10,10 +10,10 @@ export class GameEngine {
   #hiScore = +(localStorage.getItem('hiscore') ?? '0');
 
   #ctrl = makeController({
-    'keyUp': ['ArrowUp', 'w', 'W'],
-    'keyDown': ['ArrowDown', 's', 'S'],
-    'keyLeft': ['ArrowLeft', 'a', 'A'],
-    'keyRight': ['ArrowRight', 'd', 'D'],
+    'keyUp': ['ArrowUp', 'KeyW'],
+    'keyDown': ['ArrowDown', 'KeyS'],
+    'keyLeft': ['ArrowLeft', 'KeyA'],
+    'keyRight': ['ArrowRight', 'KeyD'],
     'pause': ['Escape', 'Space']
   });
 
@@ -65,7 +65,7 @@ export class GameEngine {
     this.gapElement.className = 'gap';
     this.scoreElement.className = "score";
     this.hiScoreElement.className = "score";
-    this.pauseElement.innerText = 'Пауза (Esc)';
+    this.pauseElement.innerText = 'Пауза (Esc | Space)';
     this.pauseElement.className = 'pause';
     this.pauseButton.innerText = 'Пауза (Esc)';
     this.scoreElement.innerText = '0';

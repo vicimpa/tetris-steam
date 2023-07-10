@@ -1,10 +1,10 @@
 const keymap = new Map<string, boolean>();
 
-addEventListener('keydown', ({ key }) => {
-  keymap.set(key, true);
+addEventListener('keydown', ({ code }) => {
+  keymap.set(code, true);
 });
-addEventListener('keyup', ({ key }) => {
-  keymap.set(key, false);
+addEventListener('keyup', ({ code }) => {
+  keymap.set(code, false);
 });
 
 interface IControllerConfig {
@@ -18,58 +18,64 @@ interface IKeyCtl {
   isEvery(n: number): boolean;
 }
 
+class KeyController {
+  #keys!: string[];
+  #pressed = false;
+  #lastClick = 0;
+
+  constructor(keys: string[]) {
+    this.#keys = keys;
+  }
+
+  isDown() {
+    return !!this.#keys.filter(key => keymap.get(key)).length;
+  }
+
+  isUp() {
+    return !this.isDown();
+  }
+
+  isSingle() {
+    if (!this.#pressed && this.isDown()) {
+      this.#pressed = true;
+      return true;
+    }
+
+    if (!this.isDown())
+      this.#pressed = false;
+
+    return false;
+  }
+
+  isEvery(n = 0) {
+    const time = performance.now();
+
+    if (this.isDown()) {
+      if (!this.#lastClick) {
+        this.#lastClick = time;
+        return true;
+      }
+
+      if (this.#lastClick + n < time) {
+        this.#lastClick = time;
+        return true;
+      }
+
+      return false;
+    } else {
+      this.#lastClick = 0;
+      return false;
+    }
+  }
+}
+
 export const makeController = (
   <T extends IControllerConfig>(opt: T) => {
 
     return Object
       .entries(opt)
       .reduce((acc, [key, value]: [keyof T, string[]]) => {
-        const state = {
-          pressed: false,
-          lastClick: 0
-        };
-
-        acc[key] = {
-          isDown() {
-            return !!value.filter(key => keymap.get(key)).length;
-          },
-          isUp() {
-            return !this.isDown();
-          },
-          isSingle() {
-            if (!state.pressed && this.isDown()) {
-              state.pressed = true;
-              return true;
-            }
-
-            if (!this.isDown())
-              state.pressed = false;
-
-            return false;
-          },
-          isEvery(n) {
-            const time = performance.now();
-
-            if (this.isDown()) {
-              if (!state.lastClick) {
-                state.lastClick = time;
-                return true;
-              }
-
-              if (state.lastClick + n < time) {
-                state.lastClick = time;
-                return true;
-              }
-
-              return false;
-            } else {
-              state.lastClick = 0;
-              return false;
-            }
-          }
-        };
-
-
+        acc[key] = new KeyController(value);
         return acc;
       }, {} as { [key in keyof T]: IKeyCtl });
   }
