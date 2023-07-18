@@ -46,8 +46,8 @@ export class GameEngine {
 
   appendScores = [0, 100, 300, 700, 1500];
 
-  figure: Figure = getRandomFigure();
-  nexFigure: Figure = getRandomFigure();
+  figure!: Figure;
+  nexFigure!: Figure;
 
   map = new GameMap();
   next = new GameMap(4, 4);
@@ -78,9 +78,8 @@ export class GameEngine {
     const content = app.querySelector<HTMLElement>('#content')!;
     const side = app.querySelector<HTMLElement>('#side')!;
 
-    this.renderer.append(content);
     this.newFigure();
-
+    this.renderer.append(content);
     side.appendChild(this.scoreElement);
     side.appendChild(this.hiScoreElement);
     side.appendChild(this.linesElement);
@@ -134,12 +133,12 @@ export class GameEngine {
     if (this.figure)
       this.map.remove(this.figure);
 
-    this.figure = this.nexFigure;
+    this.figure = this.nexFigure ?? getRandomFigure();
     this.nexFigure = getRandomFigure();
     this.next.remove();
     this.next.add(this.nexFigure);
     this.map.add(this.figure);
-    const y = -this.figure.height;
+    const y = -this.figure.height + this.figure.getMinY();
     const x = Math.round(
       this.map.width / 2 -
       this.figure.width / 2

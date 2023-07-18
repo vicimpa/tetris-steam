@@ -14,6 +14,32 @@ export class Figure extends SizedArray {
     map: this.clonedMap
   };
 
+  getMinY() {
+    let minY = Infinity;
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if (this.get(p(x, y)) && y < minY) {
+          minY = y;
+          break;
+        }
+      }
+    }
+    return minY;
+  }
+
+  getMaxY() {
+    let maxY = -Infinity;
+    for (let x = 0; x < this.width; x++) {
+      for (let y = this.height - 1; y >= 0; y--) {
+        if (this.get(p(x, y)) && y > maxY) {
+          maxY = y;
+          break;
+        }
+      }
+    }
+    return maxY;
+  }
+
   static make(...rows: string[]) {
     let color = 1;
     let height = rows.length, width = 0;
