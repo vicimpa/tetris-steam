@@ -63,6 +63,7 @@ export class GameEngine {
 
   previewTick = performance.now();
   previewMove = performance.now();
+  previewTime = performance.now();
 
   gapElement = createElement('div', { className: 'gap' });
   scoreElement = createElement('p', { className: 'score', innerText: `${this.score}` });
@@ -92,6 +93,7 @@ export class GameEngine {
     side.appendChild(this.githubLink);
 
     addEventListener('resize', this.resize.bind(this, app));
+    addEventListener('blur', () => this.pause = true);
     this.pauseButton.addEventListener('click', () => this.pause = !this.pause);
   }
 
@@ -195,6 +197,12 @@ export class GameEngine {
 
     const { figure } = this;
     const time = performance.now();
+    const deltaTime = time - this.previewTime;
+    this.previewTime = time;
+
+    if (deltaTime > 100 && !this.pause) {
+      this.pause = true;
+    }
 
     if (pause.isSingle()) {
       this.pause = !this.pause;
