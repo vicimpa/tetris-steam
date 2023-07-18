@@ -1,3 +1,5 @@
+import { rand } from "data/rand";
+
 import { Figure } from "./Figure";
 import { randomSort } from "./randomSort";
 
@@ -67,12 +69,12 @@ export const Z = (
 export const figuresArray = [I, O, T, J, L, S, Z];
 
 export function getRandomFigure() {
-  let rand = (Math.random() * 4) | 0;
+  let r = (rand() * 4) | 0;
 
   const figure = randomSort([...figuresArray])[0]
     .clone();
 
-  while (rand--)
+  while (r--)
     figure.rotate();
 
   return figure;
