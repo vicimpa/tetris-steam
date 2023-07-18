@@ -1,7 +1,6 @@
 import { rand } from "data/rand";
 
 import { Figure } from "./Figure";
-import { randomSort } from "./randomSort";
 
 export const I = (
   Figure
@@ -71,7 +70,7 @@ export const figuresArray = [I, O, T, J, L, S, Z];
 export function getRandomFigure() {
   let r = (rand() * 4) | 0;
 
-  const figure = randomSort([...figuresArray])[0]
+  const figure = figuresArray[rand() * figuresArray.length | 0]
     .clone();
 
   while (r--)

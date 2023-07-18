@@ -1,6 +1,5 @@
 import { GameMap } from "./GameMap";
 import { p } from "./Point";
-import { randomSort } from "./randomSort";
 import { SizedArray } from "./SizedArray";
 
 export class Figure extends SizedArray {
@@ -14,12 +13,6 @@ export class Figure extends SizedArray {
     y: this.y,
     map: this.clonedMap
   };
-
-  get randomColor() {
-    const [, ...colors] = Figure.colors;
-    const [colorValue] = randomSort(colors);
-    return Figure.colors.indexOf(colorValue);
-  }
 
   static make(...rows: string[]) {
     let color = 1;
@@ -111,7 +104,7 @@ export class Figure extends SizedArray {
     return cloned;
   }
 
-  color(color: number = this.randomColor) {
+  color(color: number = 1) {
     for (let [x, y, v] of this.entries())
       this.set(p(x, y), v ? color : 0);
 
