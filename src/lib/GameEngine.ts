@@ -1,3 +1,5 @@
+import { nextSeed } from "data/rand";
+
 import { Bind } from "./Bind";
 import { createElement } from "./createElement";
 import { Figure } from "./Figure";
@@ -247,7 +249,7 @@ export class GameEngine {
         if (this.figure.haveCollizion(this.map, true)) {
           this.stop();
           alert('Game Over!');
-          location.hash = '';
+          nextSeed();
           location.reload();
           return;
         }
