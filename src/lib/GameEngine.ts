@@ -247,6 +247,7 @@ export class GameEngine {
         if (this.figure.haveCollizion(this.map, true)) {
           this.stop();
           alert('Game Over!');
+          location.hash = '';
           location.reload();
           return;
         }
